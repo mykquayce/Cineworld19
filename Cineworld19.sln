@@ -3,7 +3,29 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2042
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cineworld.ConsoleApp", "Cineworld.ConsoleApp\Cineworld.ConsoleApp.csproj", "{E45DC380-0C37-4706-819A-B39942A7CC7D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cineworld.ConsoleApp", "Cineworld.ConsoleApp\Cineworld.ConsoleApp.csproj", "{E45DC380-0C37-4706-819A-B39942A7CC7D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cineworld.Workflows", "Cineworld.Workflows\Cineworld.Workflows.csproj", "{210C1F95-021B-4B70-A5DD-66355153C98C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cineworld.Clients", "Cineworld.Clients\Cineworld.Clients.csproj", "{4A210957-3C54-4005-895E-3A7FB5B937C7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cineworld.Models", "Cineworld.Models\Cineworld.Models.csproj", "{0ADE9863-6479-4F8C-8E12-20144021CC68}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cineworld.Services", "Cineworld.Services\Cineworld.Services.csproj", "{1037F2F6-03E9-4CDC-839F-B8580276AAF6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cineworld.Services.Concrete", "Cineworld.Services.Concrete\Cineworld.Services.Concrete.csproj", "{F162194F-2339-427C-8BA3-86222294485B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cineworld.Services.Tests", "Cineworld.Services.Tests\Cineworld.Services.Tests.csproj", "{A3E0B899-471B-4A79-8E2B-353312D128A1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cineworld.Clients.Tests", "Cineworld.Clients.Tests\Cineworld.Clients.Tests.csproj", "{73D32F38-3017-46D2-97AF-690D117C6F60}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cineworld.Models.Tests", "Cineworld.Models.Tests\Cineworld.Models.Tests.csproj", "{8E44A540-5D55-4A88-B12B-0072542F1FA9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cineworld.Clients.Concrete", "Cineworld.Clients.Concrete\Cineworld.Clients.Concrete.csproj", "{C67E3343-E7ED-4968-84CB-BDCD1D6B7EDF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cineworld.Steps", "Cineworld.Steps\Cineworld.Steps.csproj", "{AE9320C7-C23E-4A64-AF12-1193AF69D93A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cineworld.Steps.Tests", "Cineworld.Steps.Tests\Cineworld.Steps.Tests.csproj", "{289FAD97-DE32-44DD-B937-159DF548279A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +37,50 @@ Global
 		{E45DC380-0C37-4706-819A-B39942A7CC7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E45DC380-0C37-4706-819A-B39942A7CC7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E45DC380-0C37-4706-819A-B39942A7CC7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{210C1F95-021B-4B70-A5DD-66355153C98C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{210C1F95-021B-4B70-A5DD-66355153C98C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{210C1F95-021B-4B70-A5DD-66355153C98C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{210C1F95-021B-4B70-A5DD-66355153C98C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A210957-3C54-4005-895E-3A7FB5B937C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A210957-3C54-4005-895E-3A7FB5B937C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A210957-3C54-4005-895E-3A7FB5B937C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A210957-3C54-4005-895E-3A7FB5B937C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0ADE9863-6479-4F8C-8E12-20144021CC68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0ADE9863-6479-4F8C-8E12-20144021CC68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0ADE9863-6479-4F8C-8E12-20144021CC68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0ADE9863-6479-4F8C-8E12-20144021CC68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1037F2F6-03E9-4CDC-839F-B8580276AAF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1037F2F6-03E9-4CDC-839F-B8580276AAF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1037F2F6-03E9-4CDC-839F-B8580276AAF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1037F2F6-03E9-4CDC-839F-B8580276AAF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F162194F-2339-427C-8BA3-86222294485B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F162194F-2339-427C-8BA3-86222294485B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F162194F-2339-427C-8BA3-86222294485B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F162194F-2339-427C-8BA3-86222294485B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3E0B899-471B-4A79-8E2B-353312D128A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3E0B899-471B-4A79-8E2B-353312D128A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3E0B899-471B-4A79-8E2B-353312D128A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3E0B899-471B-4A79-8E2B-353312D128A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73D32F38-3017-46D2-97AF-690D117C6F60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73D32F38-3017-46D2-97AF-690D117C6F60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73D32F38-3017-46D2-97AF-690D117C6F60}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73D32F38-3017-46D2-97AF-690D117C6F60}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E44A540-5D55-4A88-B12B-0072542F1FA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E44A540-5D55-4A88-B12B-0072542F1FA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E44A540-5D55-4A88-B12B-0072542F1FA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E44A540-5D55-4A88-B12B-0072542F1FA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C67E3343-E7ED-4968-84CB-BDCD1D6B7EDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C67E3343-E7ED-4968-84CB-BDCD1D6B7EDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C67E3343-E7ED-4968-84CB-BDCD1D6B7EDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C67E3343-E7ED-4968-84CB-BDCD1D6B7EDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE9320C7-C23E-4A64-AF12-1193AF69D93A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE9320C7-C23E-4A64-AF12-1193AF69D93A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE9320C7-C23E-4A64-AF12-1193AF69D93A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE9320C7-C23E-4A64-AF12-1193AF69D93A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{289FAD97-DE32-44DD-B937-159DF548279A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{289FAD97-DE32-44DD-B937-159DF548279A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{289FAD97-DE32-44DD-B937-159DF548279A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{289FAD97-DE32-44DD-B937-159DF548279A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
