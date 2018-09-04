@@ -47,8 +47,6 @@ namespace Cineworld.Workflows
 							.Output(data => data.ShowingsFromRemote, step => step.Cinemas)
 						.Then<FilterData>()
 							.Input(step => step.Original, data => data.ShowingsFromRemote)
-							.Input(step => step.CinemaFilters, _ => new Predicate<cinemaType>[] { (cinemaType c) => c.id == 23, })
-							.Input(step => step.ShowFilters, _ => new Predicate<showType>[] { (showType s) => s.time.Date == nearestFriday, (showType s) => s.time.TimeOfDay <= new TimeSpan(3, 0, 0) || s.time.TimeOfDay >= new TimeSpan(18, 0, 0), })
 							.Output(data => data.FilteredShowingsFromRemote, step => step.Filtered)
 						.Then<CompareData>()
 							.Input(step => step.Local, data => data.FilteredShowingsFromLocal)

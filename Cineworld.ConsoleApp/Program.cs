@@ -48,7 +48,8 @@ namespace Cineworld.ConsoleApp
 
 			services
 				.Configure<Models.Configuration.Settings>(configuration)
-				.Configure<Models.Configuration.ApiSettings>(configuration.GetSection(nameof(Models.Configuration.ApiSettings)));
+				.Configure<Models.Configuration.ApiSettings>(configuration.GetSection(nameof(Models.Configuration.ApiSettings)))
+				.Configure<Models.Configuration.FilterCollection>(configuration.GetSection(nameof(Models.Configuration.FilterCollection)));
 
 			services
 				.AddTransient<Clients.ICineworldClient, Clients.Concrete.CineworldClient>()
