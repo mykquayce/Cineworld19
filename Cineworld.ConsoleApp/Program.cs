@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Threading;
 using WorkflowCore.Interface;
@@ -48,7 +49,8 @@ namespace Cineworld.ConsoleApp
 
 			services
 				.Configure<Models.Configuration.Settings>(configuration)
-				.Configure<Models.Configuration.ApiSettings>(configuration.GetSection(nameof(Models.Configuration.ApiSettings)));
+				.Configure<Models.Configuration.ApiSettings>(configuration.GetSection(nameof(Models.Configuration.ApiSettings)))
+				.Configure<Models.Configuration.FilterCollectionCollection>(configuration.GetSection(nameof(Models.Configuration.FilterCollectionCollection)));
 
 			services
 				.AddTransient<Clients.ICineworldClient, Clients.Concrete.CineworldClient>()
@@ -56,6 +58,7 @@ namespace Cineworld.ConsoleApp
 
 			services
 				.AddTransient<Services.IFileSystemService, Services.Concrete.FileSystemService>()
+				.AddTransient<Services.IFilterService, Services.Concrete.FilterService>()
 				.AddTransient<Services.ISerializationService, Services.Concrete.SerializationService>();
 
 			services

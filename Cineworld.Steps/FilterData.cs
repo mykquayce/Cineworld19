@@ -1,5 +1,4 @@
 ﻿using Cineworld.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using WorkflowCore.Interface;
@@ -22,7 +21,7 @@ namespace Cineworld.Steps
 
 		public override ExecutionResult Run(IStepExecutionContext context)
 		{
-            Filtered = new cinemasType { cinema = _filterService.Filter(Original.cinema), };
+			Filtered = _filterService.Filter(Original);
 
 			return ExecutionResult.Next();
 		}

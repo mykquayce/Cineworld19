@@ -103,7 +103,9 @@ namespace Cineworld.Services.Concrete
 			if (cinemas is default(Models.cinemasType)) throw new ArgumentNullException(nameof(cinemas));
 			if (lastModified == default(DateTime)) throw new ArgumentNullException(nameof(lastModified));
 
-			var destinationFile = new FileInfo($"{_rootDirectory}listings_{lastModified.Ticks:D}.xml");
+			var path = Path.Combine(_rootDirectory.FullName, $"listings_{lastModified.Ticks:D}.xml");
+
+			var destinationFile = new FileInfo(path);
 
 			await SaveShowingsAsync(cinemas, destinationFile).ConfigureAwait(false);
 		}
@@ -143,13 +145,12 @@ namespace Cineworld.Services.Concrete
 			}
 		}
 
-		private IEnumerable<(FileInfo, DateTime)> GetFiles()
+		private IEnumerable<(FileInfo,  DateTime)> GetFiles()
 		{
 			return from f in _rootDirectory.GetFiles(_filesQuery)
 						let m = _filesRegex.Match(f.Name)
 						where m.Success
-						let s = m.Groups["Ticks"].Value
-						let t = long.Parse(s)
+						let t = long.Parse(m.Groups["Ticks"].Value)
 						orderby t descending
 						let d = new DateTime(t)
 						select (f, d);

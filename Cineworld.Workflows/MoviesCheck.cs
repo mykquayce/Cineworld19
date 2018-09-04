@@ -39,23 +39,30 @@ namespace Cineworld.Workflows
 						.Input(step => step.Message, _ => "New lap")
 					.Then<DoNothing>()
 						.Output(data => data.LastModifiedFromRemote, _ => default(DateTime))
+					.Then<PrintMessage>()
+						.Input(step => step.Message, data => $"LastModifiedFromRemote: {data.LastModifiedFromRemote:O}")
+						.Input(step => step.Message, data => $"LastModifiedFromLocal: {data.LastModifiedFromLocal:O}")
 					.Then<GetShowingsLastModifiedFromRemote>()
 						.Output(data => data.LastModifiedFromRemote, step => step.LastModified)
 					.If(data => (data.LastModifiedFromLocal ?? DateTime.MinValue) < data.LastModifiedFromRemote)
 					.Do(then2 => then2
 						.StartWith<GetLatestShowingsFromRemote>()
 							.Output(data => data.ShowingsFromRemote, step => step.Cinemas)
+						.Then<PrintMessage>()
+							.Input(step => step.Message, data => "ShowingsFromRemote: " + CinemasToString(data.ShowingsFromRemote))
 						.Then<FilterData>()
 							.Input(step => step.Original, data => data.ShowingsFromRemote)
-							.Input(step => step.CinemaFilters, _ => new Predicate<cinemaType>[] { (cinemaType c) => c.id == 23, })
-							.Input(step => step.ShowFilters, _ => new Predicate<showType>[] { (showType s) => s.time.Date == nearestFriday, (showType s) => s.time.TimeOfDay <= new TimeSpan(3, 0, 0) || s.time.TimeOfDay >= new TimeSpan(18, 0, 0), })
 							.Output(data => data.FilteredShowingsFromRemote, step => step.Filtered)
+						.Then<PrintMessage>()
+							.Input(step => step.Message, data => "FilteredShowingsFromRemote: " + CinemasToString(data.FilteredShowingsFromRemote))
 						.Then<CompareData>()
 							.Input(step => step.Local, data => data.FilteredShowingsFromLocal)
-							.Input(step => step.Remote, data => data.FilteredShowingsFromRemote)
+							.Input(step => step.Remote, data => data.FilteredShowingsFromLocal)
 							.Output(data => data.HaveNewData, step => step.AreIdentical == false)
+						.Then<PrintMessage>()
+							.Input(step => step.Message, data => $"HaveNewData: {data.HaveNewData}")
 						.If(data => data.HaveNewData ?? false)
-							.Do(then3 => then3
+							.Do(then4 => then4
 								.StartWith<Copy>()
 									.Input(step => step.Value, data => data.FilteredShowingsFromRemote)
 									.Output(data => data.FilteredShowingsFromLocal, step => step.Value)
@@ -78,6 +85,28 @@ namespace Cineworld.Workflows
 						.Input(step => step.Duration, _ => TimeSpan.FromMinutes(30))
 				);
 		}
+
+		private static string CinemasToString(cinemasType cinemas) => string.Join("; ", CinemasToStrings(cinemas));
+
+		private static System.Collections.Generic.IEnumerable<string> CinemasToStrings(cinemasType cinemas)
+		{
+			try
+			{
+				yield return (cinemas?.cinema?.Length ?? 0) + " cinema(s)";
+
+				var ashton = new cinemaType { listing = cinemas?.cinema?.Where(c => c.id == 23)?.SelectMany(c => c?.listing)?.ToArray() ?? new filmType[0], };
+
+				yield return ashton?.listing?.Length + " film(s) at Ashton";
+
+				var today = DateTime.Now.Date;
+				var friday = Enumerable.Range(0, 7).Select(i => today.AddDays(i)).Single(dt => dt.DayOfWeek == DayOfWeek.Friday);
+
+				var films = ashton?.listing?.Where(f => f.shows.Any(s => s.time.Date == friday))?.ToList();
+
+				yield return films?.Count + " film(s) on Friday";
+			}
+			finally { }
+		}
 	}
 
 	public class PrintMessage : StepBody
@@ -86,7 +115,7 @@ namespace Cineworld.Workflows
 
 		public override ExecutionResult Run(IStepExecutionContext context)
 		{
-			Console.WriteLine($"{DateTime.UtcNow:O} : {{0}}", Message);
+			Console.WriteLine("{0:O} : {1}", DateTime.UtcNow, Message);
 
 			return ExecutionResult.Next();
 		}

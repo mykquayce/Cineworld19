@@ -1,4 +1,6 @@
 ﻿using Cineworld.Models;
+using Cineworld.Models.Configuration;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +9,7 @@ using Xunit;
 
 namespace Cineworld.Steps.Tests
 {
-	public class TestData2
+	public static class Data
 	{
 		public static IEnumerable<object[]> Times
 		{
@@ -22,22 +24,6 @@ namespace Cineworld.Steps.Tests
 							new DateTime(1980, 1, 1, 20, 0, 0),
 							new DateTime(1980, 1, 2, 20, 0, 0),
 						},
-						new Predicate<showType>[]
-						{
-							(showType s) => s.time.Date == new DateTime(1980, 1, 1),
-						},
-					},
-					new object[]
-					{
-						new[]
-						{
-							new DateTime(1980, 1, 1, 20, 0, 0),
-							new DateTime(1980, 1, 2, 20, 0, 0),
-						},
-						new Predicate<showType>[]
-						{
-							(showType s) => s.time.Date == new DateTime(1980, 1, 2),
-						},
 					},
 					new object[]
 					{
@@ -45,10 +31,6 @@ namespace Cineworld.Steps.Tests
 						{
 							new DateTime(1980, 1, 1, 20, 0, 0),
 							new DateTime(1980, 1, 1, 21, 0, 0),
-						},
-						new Predicate<showType>[]
-						{
-							(showType s) => s.time.TimeOfDay > new TimeSpan(20, 30, 0),
 						},
 					},
 					new object[]
@@ -60,11 +42,6 @@ namespace Cineworld.Steps.Tests
 							new DateTime(1980, 1, 2, 20, 0, 0),
 							new DateTime(1980, 1, 2, 21, 0, 0),
 						},
-						new Predicate<showType>[]
-						{
-							(showType s) => s.time.Date == new DateTime(1980, 1, 1),
-							(showType s) => s.time.TimeOfDay > new TimeSpan(20, 30, 0),
-						},
 					},
 				};
 			}
@@ -73,28 +50,34 @@ namespace Cineworld.Steps.Tests
 
 	public class FilterDataTests
 	{
-		private readonly Steps.FilterData _filterDataStep;
+		private readonly Steps.FilterData _step;
 
 		public FilterDataTests()
 		{
+			var filters = new FilterCollection
+			{
+				new Filter { FilterType = FilterTypes.DayOfWeek, Value = "Tuesday", },
+			};
+
+            var filterOptions = Moq.Mock.Of<IOptions<FilterCollection>>(o => o.Value == filters);
 			var serializationService = new Services.Concrete.SerializationService();
-			_filterDataStep = new Steps.FilterData(serializationService);
+			var filterService = new Services.Concrete.FilterService(filterOptions, serializationService);
+			_step = new Steps.FilterData(filterService);
 		}
 
 		[Theory]
-		[MemberData(memberName: nameof(TestData2.Times), MemberType = typeof(TestData2))]
+		[MemberData(memberName: nameof(Data.Times), MemberType = typeof(Data))]
 		public void FilterDataTests_OneCinemaOneFilmTwoDays_FilteredToJustOneDay(
-			IEnumerable<DateTime> times,
-			IEnumerable<Predicate<showType>> filters)
+			IEnumerable<DateTime> times)
 		{
 			// Arrange
-			_filterDataStep.Original = new cinemasType
+			_step.Original = new cinemasType
 			{
 				cinema = new[]
 				{
 					new cinemaType
 					{
-						listing = new []
+						listing = new[]
 						{
 							new filmType
 							{
@@ -105,13 +88,11 @@ namespace Cineworld.Steps.Tests
 				},
 			};
 
-			_filterDataStep.ShowFilters = filters;
-
 			// Act
-			_filterDataStep.Run(default(IStepExecutionContext));
+			_step.Run(default(IStepExecutionContext));
 
 			// Arrange
-			var actual = _filterDataStep.Filtered;
+			var actual = _step.Filtered;
 
 			// Assert
 			Assert.NotNull(actual);
@@ -127,7 +108,6 @@ namespace Cineworld.Steps.Tests
 			Assert.NotNull(actual.cinema[0].listing[0]);
 			Assert.NotNull(actual.cinema[0].listing[0].shows);
 			Assert.NotEmpty(actual.cinema[0].listing[0].shows);
-			Assert.Single(actual.cinema[0].listing[0].shows);
 
 			Assert.NotNull(actual.cinema[0].listing[0].shows[0]);
 			Assert.NotEqual(default(DateTime), actual.cinema[0].listing[0].shows[0].time);

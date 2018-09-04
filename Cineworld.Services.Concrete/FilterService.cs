@@ -1,98 +1,127 @@
 ﻿using Cineworld.Models;
 using Cineworld.Models.Configuration;
+using Dawn;
 using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace Cineworld.Services.Concrete
 {
-    public class FilterService : IFilterService
+	public class FilterService : IFilterService
     {
-        private const RegexOptions _regexOptions = RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant;
-
-        private readonly ICollection<Filter> _filters;
+        private readonly ICollection<FilterCollection> _filterCollections;
         private readonly ISerializationService _serializationService;
 
         public FilterService(
-            IOptions<List<Filter>> filterOptions,
+            IOptions<FilterCollectionCollection> filterCollectionCollectionOptions,
             ISerializationService serializationService)
         {
-            _filters = filterOptions.Value;
-            _serializationService = serializationService;
+            _filterCollections = filterCollectionCollectionOptions?.Value ?? throw new ArgumentNullException(nameof(filterCollectionCollectionOptions));
+			_serializationService = serializationService ?? throw new ArgumentNullException(nameof(serializationService));
         }
 
-        public IEnumerable<cinemasType> Filter(cinemasType before)
-        {
-            foreach (var filter in _filters)
-            {
-                var cinemas = new List<cinemaType>();
+		private IEnumerable<int> FilterCinemaIds => from f in _filters
+													where (f?.FilterType & FilterTypes.CinemaId) != 0
+													let s = f.Value as string
+													where !string.IsNullOrWhiteSpace(s)
+													let i = int.TryParse(s, out var result) ? result : -1
+													where i > 0
+													select i;
 
-                foreach (var cinema in Filter(before.cinema, filter))
-                {
-                    var films = new List<filmType>();
+		private IEnumerable<string> FilterTitles => from f in _filters
+													where (f?.FilterType & FilterTypes.Title) != 0
+													let s = f.Value as string
+													where !string.IsNullOrWhiteSpace(s)
+													select s;
 
-                    foreach (var film in Filter(cinema.listing, filter))
-                    {
-                        var shows = _serializationService.DeepClone(Filter(film.shows, filter).ToArray());
+		private IEnumerable<DayOfWeek> FilterDaysOfWeek => from f in _filters
+														   where (f?.FilterType & FilterTypes.DayOfWeek) != 0
+														   let s = f.Value as string
+														   where !string.IsNullOrWhiteSpace(s)
+														   let d = Enum.TryParse(s, out DayOfWeek result) ? result : (DayOfWeek)(-1)
+														   where d >= 0
+														   select d;
 
-                        var cloned = _serializationService.DeepClone(film);
+        public cinemasType Filter(cinemasType before)
+		{
+			var cinemas = new List<cinemaType>();
 
-                        cloned.shows = shows;
+			var cloned = _serializationService.DeepClone(before.cinema);
 
-                        films.Add(cloned);
-                    }
+			foreach (var cinema in FilterCinemas(cloned))
+			{
+				var films = new List<filmType>();
 
-                    var clonedCinema = _serializationService.DeepClone(cinema);
+				foreach (var film in FilterFilms(cinema.listing))
+				{
+					var shows = FilterShows(film.shows).ToArray();
 
-                    clonedCinema.listing = films.ToArray();
+					if (shows.Length > 0)
+					{
+						film.shows = shows;
+						films.Add(film);
+					}
+				}
 
-                    cinemas.Add(clonedCinema);
-                }
+				if (films.Count > 0)
+				{
+					cinema.listing = films.ToArray();
+					cinemas.Add(cinema);
+				}
+			}
 
-                yield return new cinemasType { cinema = cinemas.ToArray(), };
-            }
-        }
+			return new cinemasType { cinema = cinemas.ToArray(), };
+		}
 
+		private IEnumerable<cinemaType> FilterCinemas(IEnumerable<cinemaType> cinemas)
+		{
+			Guard.Argument(() => cinemas)
+				.NotNull()
+				.Require(cc => cc.All(c => c != default), _ => $"{nameof(cinemas)} cannot have null items");
 
-        private static IEnumerable<cinemaType> Filter(IEnumerable<cinemaType> cinemas, Filter filter)
-        {
-            if (filter?.CinemaIds?.Any() ?? false)
-            {
-                return from c in cinemas
-                       where filter.CinemaIds.Contains(c.id)
-                       select c;
-            }
+			var ids = FilterCinemaIds?.ToList() ?? new List<int>();
 
-            return cinemas;
-        }
+			if (ids.Count == 0)
+			{
+				return cinemas;
+			}
 
-        private static IEnumerable<filmType> Filter(IEnumerable<filmType> films, Filter filter)
-        {
-            if (!string.IsNullOrWhiteSpace(filter?.TitlePattern))
-            {
-                var titleRegex = string.IsNullOrWhiteSpace(filter.TitlePattern)
-                    ? default(Regex)
-                    : new Regex(filter.TitlePattern, _regexOptions);
+			return cinemas.Where(c => ids.Contains(c.id));
+		}
 
-                return from f in films
-                       where titleRegex.IsMatch(f.title)
-                       select f;
-            }
+		private IEnumerable<filmType> FilterFilms(IEnumerable<filmType> films)
+		{
+			Guard.Argument(() => films)
+				.NotNull()
+				.Require(ff => ff.All(c => c != default), _ => $"{nameof(films)} cannot have null items");
 
-            return films;
-        }
+			var titles = FilterTitles?.ToList() ?? new List<string>();
 
-        private static IEnumerable<showType> Filter(IEnumerable<showType> shows, Filter filter)
-        {
-            if (filter?.DaysOfWeek?.Any() ?? false)
-            {
-                return from s in shows
-                       where filter.DaysOfWeek.Contains(s.time.DayOfWeek)
-                       select s;
-            }
+			if (titles.Count == 0)
+			{
+				return films;
+			}
 
-            return shows;
-        }
+			return from f in films
+				   where titles.Any(t => f.title.IndexOf(t, StringComparison.InvariantCultureIgnoreCase) > -1)
+				   select f;
+		}
+
+		private IEnumerable<showType> FilterShows(IEnumerable<showType> shows)
+		{
+			Guard.Argument(() => shows)
+				.NotNull()
+				.Require(ss => ss.All(s => s != default), _ => $"{nameof(shows)} cannot have null items");
+
+			var days = FilterDaysOfWeek?.ToList() ?? new List<DayOfWeek>();
+
+			if (days.Count == 0)
+			{
+				return shows;
+			}
+
+			return shows.Where(s => days.Contains(s.time.DayOfWeek));
+		}
     }
 }
