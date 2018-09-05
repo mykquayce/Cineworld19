@@ -57,6 +57,7 @@ namespace Cineworld.ConsoleApp
 
 			services
 				.AddTransient<Services.IFileSystemService, Services.Concrete.FileSystemService>()
+				.AddTransient<Services.IFilterService, Services.Concrete.FilterService>()
 				.AddTransient<Services.ISerializationService, Services.Concrete.SerializationService>();
 
 			services

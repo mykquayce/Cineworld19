@@ -4,6 +4,6 @@ namespace Cineworld.Services
 {
     public interface IFilterService
     {
-        cinemasType Filter(cinemasType cinemas);
+        cinemasType Filter(cinemasType before);
     }
 }

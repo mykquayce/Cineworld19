@@ -14,6 +14,8 @@
 namespace Cineworld.Models {
     using System.Xml.Serialization;
     
+
+    // TODO: make these arrays ICollection's
     
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.7.2558.0")]
