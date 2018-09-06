@@ -3,7 +3,6 @@ using System;
 
 namespace Cineworld.Models
 {
-
 	public partial class showType : IEquatable<showType>
 	{
 		public bool Equals(showType other)
@@ -15,5 +14,7 @@ namespace Cineworld.Models
 				&& this.subtitled.SafeEquals(other?.subtitled)
 				&& this.sessionType.SafeEquals(other?.sessionType);
 		}
-	}
+
+        public override int GetHashCode() => this.time.GetHashCode();
+    }
 }
