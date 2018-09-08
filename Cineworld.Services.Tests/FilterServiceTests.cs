@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Cineworld.Services.Tests
 {
-    public class FilterServiceTests
+	public class FilterServiceTests
     {
         [Theory]
         [InlineData(new short[0], 3)]
@@ -31,58 +31,56 @@ namespace Cineworld.Services.Tests
                 new cinemaType { id = 3, },
             };
 
-            // Act
-            var after = FilterService.FilterCinemas(before, cinemaIds).ToList();
-
-            // Assert
-            Assert.NotNull(after);
-            Assert.Equal(expectedCount, after.Count);
+			_cinemas = new cinemasType
+			{
+				cinema = new[]
+				{
+					new cinemaType
+					{
+						id = 21,
+						listing = new[]
+						{
+							new filmType
+							{
+								title = "Jaws",
+								shows = new[]
+								{
+									new showType
+									{
+										time = new DateTime(2018, 8, 16, 17, 0, 0, DateTimeKind.Unspecified),
+									},
+								},
+							},
+						},
+					},
+				},
+			};
         }
 
-        [Theory]
-        [InlineData(new[] { "jaw", }, 1)]
-        [InlineData(new[] { "(jaw|shin)", }, 2)]
-        [InlineData(new[] { "(jaw|shin|gho)", }, 3)]
-        [InlineData(new[] { "jaw", "shin", "gho", }, 3)]
-        public void FilterServiceTests_FilterFilms(
-            string[] titlePatterns, int expectedCount)
+        [Fact]
+        public void FilterServiceTests_BehavesPredictably()
         {
-            var before = new[]
-            {
-                new filmType{ title = "Jaws", },
-                new filmType{ title = "The Shining", },
-                new filmType{ title = "Ghostbusters", },
-            };
+			var filters = new FilterCollection
+			{
+				new Filter { FilterType = FilterTypes.CinemaId, Value = 21, },
+				new Filter { FilterType = FilterTypes.DayOfWeek, Value = "Thursday",},
+				new Filter { FilterType = FilterTypes.Title, Value="jaw", },
+			};
 
-            var after = FilterService.FilterFilms(before, titlePatterns).ToList();
+            var filterOptions = Moq.Mock.Of<IOptions<FilterCollection>>(o => o.Value == filters);
 
-            // Assert
-            Assert.NotNull(after);
-            Assert.Equal(expectedCount, after.Count);
-        }
-
-        [Theory]
-        [InlineData(new string[0], 4)]
-        [InlineData(new[] { ">7pm", }, 3)]
-        public void FilterServiceTests_FilterShows(string[] timeFilterStrings, int expectedCount)
-        {
-            // Arrange
-            var before = new[]
-            {
-                new showType { time = new DateTime(1980, 1, 1, 19, 0, 0, DateTimeKind.Local), },
-                new showType { time = new DateTime(1980, 1, 1, 20, 0, 0, DateTimeKind.Local), },
-                new showType { time = new DateTime(1980, 1, 1, 21, 0, 0, DateTimeKind.Local), },
-                new showType { time = new DateTime(1980, 1, 1, 22, 0, 0, DateTimeKind.Local), },
-            };
-
-            var timeFilters = timeFilterStrings.Select(s => new TimeFilter(s)).ToList();
+            var service = new Services.Concrete.FilterService(filterOptions, _serializationService);
 
             // Act
-            var after = FilterService.FilterShows(before, timeFilters, new DayOfWeek[0]).ToList();
+            var after = service.Filter(_cinemas);
 
             // Assert
             Assert.NotNull(after);
-            Assert.Equal(expectedCount, after.Count);
+            Assert.NotNull(after.cinema);
+            Assert.NotEmpty(after.cinema);
+			Assert.All(after.cinema, Assert.NotNull);
+			Assert.All(after.cinema.Select(c => c.listing), Assert.NotNull);
+			Assert.All(after.cinema.Select(c => c.listing), Assert.NotEmpty);
         }
     }
 }

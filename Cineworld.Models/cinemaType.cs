@@ -18,6 +18,6 @@ namespace Cineworld.Models
 				&& this.postcode.SafeEquals(other?.postcode);
 		}
 
-		public override string ToString() => $"{name}, ({id:D}), {listing?.Length ?? 0} listing(s)";
+		public override string ToString() => $"{name}, ({id:D}), {(listing?.Length ?? 0):D} listing(s)";
 	}
 }

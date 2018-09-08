@@ -2,7 +2,7 @@
 
 namespace Cineworld.Services
 {
-    public interface IFilterService
+	public interface IFilterService
     {
         cinemasType Filter(cinemasType before);
     }

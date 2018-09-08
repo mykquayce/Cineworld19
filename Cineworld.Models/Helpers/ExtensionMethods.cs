@@ -47,21 +47,21 @@ namespace Cineworld.Models.Helpers
 			=> left?.All(l => right?.Any(r => l?.Equals(r) ?? false) ?? false) ?? false;
 
 		public static bool SafeEquals(this string left, string right)
-			=> left is default(string) && right is default(string)
+			=> (left is default(string) && right is default(string))
 			|| (left?.Equals(right, StringComparison.InvariantCulture) ?? false);
 
-		public static IEnumerable<string> ToStrings(this Exception exception)
+		public static IEnumerable<string> ToStrings(this Exception exception, string indent = "")
 		{
-			yield return DateTime.UtcNow.ToString("O");
-			yield return exception.GetType().FullName;
-			yield return exception.Message;
-			yield return exception.StackTrace;
+			yield return indent + DateTime.UtcNow.ToString("O");
+			yield return indent + exception.GetType().FullName;
+			yield return indent + exception.Message;
+			yield return indent + exception.StackTrace;
 
 			foreach (var key in exception.Data.Keys)
 			{
 				var value = exception.Data[key];
 
-				yield return $"{key}={value};";
+				yield return $"{indent}{key}={value};";
 			}
 
 			yield return new string('=', 10);
@@ -71,18 +71,18 @@ namespace Cineworld.Models.Helpers
 				case AggregateException aggregateException:
 					foreach(var innerException in aggregateException.InnerExceptions)
 					{
-						foreach (var s in innerException.ToStrings())
+						foreach (var s in innerException.ToStrings(indent + '\t'))
 						{
-							yield return s;
+							yield return indent + s;
 						}
 					}
 					break;
 				default:
 					if (!(exception.InnerException is default(Exception)))
 					{
-						foreach (var s in exception.InnerException.ToStrings())
+						foreach (var s in exception.InnerException.ToStrings(indent + '\t'))
 						{
-							yield return s;
+							yield return indent + s;
 						}
 					}
 					break;
