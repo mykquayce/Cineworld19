@@ -35,6 +35,12 @@ namespace Cineworld.Services.Concrete
 
         public cinemasType Filter(cinemasType before)
         {
+			Guard
+				.Argument(() => before)
+				.NotNull()
+				.Require(c => (c.cinema?.Length ?? 0) > 0, _ => nameof(before) + " has no cinemas")
+				.Require(c => c.cinema.All(i => i != default), _ => nameof(before) + " has null cinemas");
+
             foreach (var filter in _filters)
             {
                 var cinemas = new List<cinemaType>();

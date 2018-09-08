@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Dawn;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Cineworld.Clients.Concrete
@@ -19,11 +19,13 @@ namespace Cineworld.Clients.Concrete
 			_apiSettings = apiSettingsOptions?.Value ?? throw new KeyNotFoundException();
 		}
 
-		public async Task<bool> SendMessageAsync(string text)
+		public async Task<bool> SendMessageAsync(string message)
 		{
+			Guard.Argument(() => message).NotNull().NotEmpty();
+
 			var relativeUrl = String.Concat("/services/", string.Join('/', _apiSettings.SlackWebhook));
 
-			var result = await base.PostAsync<string>(relativeUrl, new { text, }).ConfigureAwait(false);
+			var result = await base.PostAsync<string>(relativeUrl, new { message, }).ConfigureAwait(false);
 
 			return string.Equals("ok", result, StringComparison.InvariantCulture);
 		}
