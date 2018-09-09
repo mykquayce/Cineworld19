@@ -82,6 +82,10 @@ namespace Cineworld.ConsoleApp
 
 			host.OnStepError += (workflow, step, exception) =>
 			{
+#if DEBUG
+				System.Diagnostics.Debugger.Break();
+#endif
+
 				var s = string.Join(Environment.NewLine, Models.Helpers.ExtensionMethods.ToStrings(exception));
 
 				Console.WriteLine($"{DateTime.UtcNow:O} {step.Name} {s}");

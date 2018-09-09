@@ -11,8 +11,42 @@ namespace Cineworld.Models.Helpers
         {
             Guard.Argument(() => cinemases).NotNull().NotEmpty().CountInRange(2, int.MaxValue);
 
-            throw new NotImplementedException();
+			foreach (var (id, group) in from cc in cinemases
+										from c in cc
+										group c by c.id into gg
+										select (gg.Key, gg))
+			{
+				var cinema = new cinemaType
+				{
+					id = id,
+					listing = MergeFilms(group.SelectMany(g => g.listing)).ToArray(),
+				};
+
+				yield return cinema;
+			}
         }
+
+		public static IEnumerable<filmType> MergeFilms(params IEnumerable<filmType>[] filmses)
+		{
+			var merged = new List<filmType>();
+
+			foreach (var (edi, group) in from ff in filmses
+										  from f in ff
+										  group f by f.edi into gg
+										  select (gg.Key, gg))
+			{
+				var film = new filmType
+				{
+					edi = edi,
+					title = group.First().title,
+					shows = group.SelectMany(f => f.shows).Distinct().ToArray(),
+				};
+
+				merged.Add(film);
+			}
+
+			return merged;
+		}
 
         public static IEnumerable<showType> MergeShows(params IEnumerable<showType>[] showses)
             => Merge(showses).OrderBy(s => s.time);

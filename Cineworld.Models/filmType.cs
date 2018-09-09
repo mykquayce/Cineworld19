@@ -15,5 +15,7 @@ namespace Cineworld.Models
 				&& (this.edi == other?.edi)
 				&& this.release.SafeEquals(other?.release);
 		}
+
+		public override int GetHashCode() => this.title.GetHashCode();
 	}
 }

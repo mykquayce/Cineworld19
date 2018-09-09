@@ -52,5 +52,42 @@ namespace Cineworld.Models.Tests
             Assert.NotEmpty(actual);
             Assert.Equal(5, actual.Count);
         }
+
+		[Fact]
+		public void MergeHelpersTests_Films()
+		{
+			var filmses = new[]
+			{
+				new[]
+				{
+					new filmType
+					{
+						edi = 1,
+						title = "Jaws",
+						shows = new[] { new showType { time = new DateTime(1980, 1, 1, 20, 0, 0, DateTimeKind.Local), }, },
+					},
+					new filmType
+					{
+						edi = 1,
+						title = "Jaws",
+						shows = new[] { new showType { time = new DateTime(1980, 1, 1, 21, 0, 0, DateTimeKind.Local), }, },
+					},
+				},
+			};
+
+			// Act
+			var actual = MergeHelpers.MergeFilms(filmses).ToList();
+
+            // Assert
+            Assert.NotNull(actual);
+            Assert.NotEmpty(actual);
+            Assert.Single(actual);
+			Assert.All(actual, Assert.NotNull);
+			Assert.All(actual, f => Assert.NotNull(f.shows));
+			Assert.All(actual, f => Assert.NotEmpty(f.shows));
+			Assert.Equal(2, actual[0].shows.Length);
+			Assert.Equal(new DateTime(1980, 1, 1, 20, 0, 0, DateTimeKind.Local), actual[0].shows[0].time);
+			Assert.Equal(new DateTime(1980, 1, 1, 21, 0, 0, DateTimeKind.Local), actual[0].shows[1].time);
+		}
     }
 }

@@ -8,6 +8,7 @@ namespace Cineworld.Models.Configuration
 		None = 0,
 		CinemaId = 1,
 		DayOfWeek = 2,
-		Title = 4,
+		Time = 4,
+		Title = 8,
 	}
 }

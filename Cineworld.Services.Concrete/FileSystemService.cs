@@ -12,9 +12,9 @@ namespace Cineworld.Services.Concrete
 {
 	public class FileSystemService : IFileSystemService
 	{
-		private readonly Regex _filesRegex;
 		private const RegexOptions _regexOptions = RegexOptions.ExplicitCapture | RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant;
-		private readonly string _filesQuery;
+		private static readonly Regex _filesRegex = new Regex("^listings_(?<Ticks>\\d+).xml$", _regexOptions);
+		private static readonly string _filesQuery = "listings_*.xml";
 		private readonly DirectoryInfo _rootDirectory;
 		private readonly ISerializationService _serializationService;
 
@@ -23,12 +23,6 @@ namespace Cineworld.Services.Concrete
 			IOptions<Settings> settingsOptions,
 			ISerializationService serializationService)
 		{
-			_filesRegex = new Regex(
-				settingsOptions?.Value?.FilesPattern ?? throw new ArgumentOutOfRangeException(nameof(Settings.FilesPattern)),
-				_regexOptions);
-
-			_filesQuery = settingsOptions?.Value?.FilesQuery ?? throw new ArgumentOutOfRangeException(nameof(Settings.FilesQuery));
-
 			_rootDirectory = new DirectoryInfo(
 				(settingsOptions?.Value?.Path ?? throw new ArgumentOutOfRangeException(nameof(Settings.Path)))
 				+ Path.DirectorySeparatorChar
@@ -96,7 +90,16 @@ namespace Cineworld.Services.Concrete
 		#endregion Save
 
 		public DateTime? GetShowingsLastModified()
-			=> GetFiles()?.FirstOrDefault().Item2;
+		{
+			var (file, lastModified) = GetFiles().FirstOrDefault();
+
+			if (file == default && lastModified == default)
+			{
+				return default;
+			}
+
+			return lastModified;
+		}
 
 		public async Task SaveShowingsAsync(Models.cinemasType cinemas, DateTime lastModified)
 		{

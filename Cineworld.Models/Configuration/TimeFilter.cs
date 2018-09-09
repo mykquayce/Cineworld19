@@ -6,7 +6,7 @@ namespace Cineworld.Models.Configuration
 {
     public class TimeFilter
     {
-        private static readonly string _pattern = @"^(?<Relative>[<>!=]{0,2})(?<Time>[\d:]{1,5})(?<Meridian>[AMPamp]{2})?$";
+        private static readonly string _pattern = @"^(?<Relative>[<>!=]{0,2})(?<Time>\d{2}:\d{2})$";
         private static readonly Regex _regex = new Regex(_pattern);
 
         public TimeFilter(string s)
@@ -17,16 +17,6 @@ namespace Cineworld.Models.Configuration
 
             Relative = ParseRelative(match.Groups["Relative"].Value);
             Time = TimeSpan.Parse(match.Groups["Time"].Value);
-
-            while (Time.Days > 0)
-            {
-                Time = TimeSpan.FromHours(Time.Days);
-            }
-
-            if (match.Groups["Meridian"].Success && string.Equals(match.Groups["Meridian"].Value, "pm", StringComparison.InvariantCultureIgnoreCase))
-            {
-                Time += TimeSpan.FromHours(12);
-            }
         }
 
         public Relative Relative { get; set; }
@@ -52,7 +42,7 @@ namespace Cineworld.Models.Configuration
 
         public static Relative ParseRelative(string s)
         {
-            Guard.Argument(() => s).NotNull().NotEmpty().LengthInRange(0, 2);
+            Guard.Argument(() => s).NotNull().LengthInRange(0, 2);
 
             switch (s)
             {
