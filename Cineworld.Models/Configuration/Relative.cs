@@ -1,11 +1,7 @@
-﻿using Cineworld.Models.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 
 namespace Cineworld.Models.Configuration
 {
-
     [Flags]
     public enum Relative : byte
     {

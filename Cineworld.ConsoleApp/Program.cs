@@ -50,7 +50,7 @@ namespace Cineworld.ConsoleApp
 			services
 				.Configure<Models.Configuration.Settings>(configuration)
 				.Configure<Models.Configuration.ApiSettings>(configuration.GetSection(nameof(Models.Configuration.ApiSettings)))
-				.Configure<Models.Configuration.FilterCollectionCollection>(configuration.GetSection(nameof(Models.Configuration.FilterCollectionCollection)));
+				.Configure<Models.Configuration.FilterCollection>(configuration.GetSection(nameof(Models.Configuration.FilterCollection)));
 
 			services
 				.AddTransient<Clients.ICineworldClient, Clients.Concrete.CineworldClient>()
@@ -66,7 +66,7 @@ namespace Cineworld.ConsoleApp
 				.AddTransient<Steps.GetLatestShowingsFromLocal>()
 				.AddTransient<Steps.GetLatestShowingsFromRemote>()
 				.AddTransient<Steps.GetShowingsLastModifiedFromLocal>()
-				.AddTransient<Steps.GetShowingsLastModifiedFromRemote>()
+				.AddTransient<Steps.GetLastModifiedFromRemoteStep>()
 				.AddTransient<Steps.Save>()
 				.AddTransient<Steps.SendMessage>()
 				.AddTransient<Steps.Sleep>();

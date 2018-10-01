@@ -25,7 +25,7 @@ namespace Cineworld.Clients.Concrete
 
 			var relativeUrl = String.Concat("/services/", string.Join('/', _apiSettings.SlackWebhook));
 
-			var result = await base.PostAsync<string>(relativeUrl, new { message, }).ConfigureAwait(false);
+			var result = await base.PostAsync<string>(relativeUrl, new { text = message, }).ConfigureAwait(false);
 
 			return string.Equals("ok", result, StringComparison.InvariantCulture);
 		}

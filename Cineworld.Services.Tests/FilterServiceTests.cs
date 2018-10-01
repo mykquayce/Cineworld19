@@ -48,30 +48,6 @@ namespace Cineworld.Services.Tests
 		}
 
 		[Theory]
-		[InlineData(new string[0], new DayOfWeek[0], 10)]
-		[InlineData(new[] { ">=21:00", }, new[] { DayOfWeek.Wednesday, }, 2)]
-		[InlineData(new[] { "<18:00", }, new[] { DayOfWeek.Tuesday, }, 0)]
-		[InlineData(new[] { "=18:00", }, new[] { DayOfWeek.Tuesday, }, 1)]
-		[InlineData(new[] { "18:00", }, new[] { DayOfWeek.Tuesday, DayOfWeek.Wednesday, }, 2)]
-		[InlineData(new[] { ">=18:00", }, new[] { DayOfWeek.Tuesday, }, 5)]
-		[InlineData(new[] { ">=18:00", }, new[] { DayOfWeek.Wednesday, }, 5)]
-		[InlineData(new string[0], new[] { DayOfWeek.Wednesday, }, 5)]
-		[InlineData(new string[0], new[] { DayOfWeek.Tuesday, DayOfWeek.Wednesday, }, 10)]
-		public void FilterServiceTests_FilterShows(
-			string[] timeFiltersStrings, DayOfWeek[] daysOfWeek, int expectedCount)
-		{
-			var timeFilters = timeFiltersStrings.Select(s => new TimeFilter(s)).ToList();
-
-			// Act
-			var actual = FilterService.Filter(_shows, timeFilters, daysOfWeek).ToList();
-
-			// Assert
-			Assert.Equal(expectedCount, actual.Count);
-			Assert.All(actual, Assert.NotNull);
-			Assert.All(actual, s => Assert.NotEqual(default, s.time));
-		}
-
-		[Theory]
 		[InlineData(new string[0], 3)]
 		[InlineData(new[] { "Jaws", }, 1)]
 		[InlineData(new[] { "jaws", }, 1)]
@@ -111,19 +87,16 @@ namespace Cineworld.Services.Tests
 		[Fact]
 		public void FilterServiceTests_()
 		{
-			var filterses = new FilterCollectionCollection
-			{
-				new FilterCollection
-				{
-					new Filter { FilterType = FilterTypes.CinemaId, Value = "1", },
-				},
-			};
+            var filters = new FilterCollection
+            {
+                new Filter { CinemaIds = new short[] { 1, }, },
+            };
 
-			var filtersesOptionsMock = new Mock<IOptions<FilterCollectionCollection>>();
+			var filtersesOptionsMock = new Mock<IOptions<FilterCollection>>();
 
 			filtersesOptionsMock
 				.Setup(x => x.Value)
-				.Returns(filterses);
+				.Returns(filters);
 
 			var service = new FilterService(filtersesOptionsMock.Object, new SerializationService());
 

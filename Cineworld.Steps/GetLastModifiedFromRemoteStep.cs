@@ -5,11 +5,11 @@ using WorkflowCore.Models;
 
 namespace Cineworld.Steps
 {
-	public class GetShowingsLastModifiedFromRemote : StepBodyAsync
+	public class GetLastModifiedFromRemoteStep : StepBodyAsync
 	{
 		private readonly Clients.ICineworldClient _client;
 
-		public GetShowingsLastModifiedFromRemote(
+		public GetLastModifiedFromRemoteStep(
 			Clients.ICineworldClient client)
 		{
 			_client = client

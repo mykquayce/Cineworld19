@@ -21,6 +21,17 @@ namespace Cineworld.Workflows
 				.Select(i => today.AddDays(i))
 				.Single(d => d.DayOfWeek == DayOfWeek.Friday);
 
+            builder
+                .StartWith<DoNothing>()
+                .While(_ => true)
+                    .Do(then => then
+                        .StartWith<DoNothing>()
+                        .Then<Sleep>()
+                            .Input(step => step.Duration, _ => TimeSpan.FromSeconds(2))
+                    );
+
+            return;
+
 			builder
 				.StartWith<DoNothing>()
 				.Parallel()
@@ -42,7 +53,7 @@ namespace Cineworld.Workflows
 					.Then<PrintMessage>()
 						.Input(step => step.Message, data => $"LastModifiedFromRemote: {data.LastModifiedFromRemote:O}")
 						.Input(step => step.Message, data => $"LastModifiedFromLocal: {data.LastModifiedFromLocal:O}")
-					.Then<GetShowingsLastModifiedFromRemote>()
+					.Then<GetLastModifiedFromRemoteStep>()
 						.Output(data => data.LastModifiedFromRemote, step => step.LastModified)
 					.If(data => (data.LastModifiedFromLocal ?? DateTime.MinValue) < data.LastModifiedFromRemote)
 					.Do(then2 => then2
@@ -80,6 +91,7 @@ namespace Cineworld.Workflows
 									.Input(step => step.Message, data => data.FilteredShowingsFromLocal)
 							)
 					)
+                    //.Then<DoHeartbeat>()
 					// Sleeeeeeeeeep...
 					.Then<Sleep>()
 						.Input(step => step.Duration, _ => TimeSpan.FromMinutes(30))

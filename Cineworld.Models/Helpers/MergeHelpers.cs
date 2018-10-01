@@ -20,6 +20,7 @@ namespace Cineworld.Models.Helpers
 				{
 					id = id,
 					listing = MergeFilms(group.SelectMany(g => g.listing)).ToArray(),
+                    name = group.First().name,
 				};
 
 				yield return cinema;
